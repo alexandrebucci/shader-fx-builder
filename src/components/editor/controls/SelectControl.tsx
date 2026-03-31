@@ -14,15 +14,17 @@ interface Props {
 }
 
 export function SelectControl({ param, value, onChange }: Props) {
+  const isModified = value !== param.default
+
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-xs text-muted-foreground">{param.label}</span>
+      <span className={`text-xs ${isModified ? 'text-foreground' : 'text-muted-foreground'}`}>{param.label}</span>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger className="h-8 text-xs">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          {param.options?.map((opt) => (
+          {(param.options ?? []).map((opt) => (
             <SelectItem key={opt.value} value={opt.value} className="text-xs">
               {opt.label}
             </SelectItem>

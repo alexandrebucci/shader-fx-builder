@@ -9,6 +9,7 @@ interface Props {
 }
 
 export function ColorControl({ param, value, onChange }: Props) {
+  const isModified = value !== param.default
   const [open, setOpen] = useState(false)
   const [hexInput, setHexInput] = useState(value)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -32,7 +33,7 @@ export function ColorControl({ param, value, onChange }: Props) {
 
   return (
     <div ref={containerRef} className="flex flex-col gap-1.5 relative">
-      <span className="text-xs text-muted-foreground">{param.label}</span>
+      <span className={`text-xs ${isModified ? 'text-foreground' : 'text-muted-foreground'}`}>{param.label}</span>
       <div className="flex items-center gap-2">
         <button
           className="w-8 h-6 rounded border border-border flex-shrink-0"

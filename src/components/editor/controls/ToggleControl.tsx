@@ -9,10 +9,12 @@ interface Props {
 }
 
 export function ToggleControl({ param, value, onChange }: Props) {
+  const isModified = value !== param.default
+
   return (
     <div className="flex items-center justify-between">
-      <Label className="text-xs text-muted-foreground">{param.label}</Label>
-      <Switch checked={value} onCheckedChange={onChange} />
+      <Label className={`text-xs ${isModified ? 'text-foreground' : 'text-muted-foreground'}`}>{param.label}</Label>
+      <Switch checked={value} onCheckedChange={(checked) => onChange(checked)} />
     </div>
   )
 }
