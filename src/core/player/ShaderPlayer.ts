@@ -1,5 +1,8 @@
 import * as THREE from 'three'
+import type { ParamDef } from '@/shaders/types'
 import type { UniformValue } from '../uniforms/types'
+import { UniformManager } from '../uniforms/UniformManager'
+import { ShaderCompiler } from './ShaderCompiler'
 
 const DEFAULT_VERTEX = /* glsl */`
 varying vec2 vUv;
@@ -23,69 +26,131 @@ export class ShaderPlayer {
   private geometry: THREE.BufferGeometry | null = null
   private rafId: number | null = null
   private startTime = 0
+  private resizeObserver: ResizeObserver | null = null
+  private uniformManager = new UniformManager()
+  private onFps?: (fps: number) => void
+  private frameCount = 0
+  private lastFpsTime = 0
 
-  init(canvas: HTMLCanvasElement): void {
+  init(canvas: HTMLCanvasElement, onFps?: (fps: number) => void): void {
+    this.onFps = onFps
+
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: false })
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    this.renderer.setSize(canvas.clientWidth, canvas.clientHeight, false)
 
+    this.geometry = new THREE.PlaneGeometry(2, 2)
     this.material = new THREE.ShaderMaterial({
       vertexShader: DEFAULT_VERTEX,
       fragmentShader: DEFAULT_FRAGMENT,
-      uniforms: {
-        uTime: { value: 0 },
-        uResolution: { value: new THREE.Vector2(canvas.clientWidth, canvas.clientHeight) },
-        uAspect: { value: canvas.clientWidth / canvas.clientHeight },
-        uMouse: { value: new THREE.Vector2(0.5, 0.5) },
-      },
+      uniforms: this.uniformManager.getAll() as Record<string, THREE.IUniform>,
     })
 
-    this.geometry = new THREE.PlaneGeometry(2, 2)
     const mesh = new THREE.Mesh(this.geometry, this.material)
     this.scene.add(mesh)
 
+    this.setupResize(canvas)
+    this.setupMouse(canvas)
+    this.handleResize(canvas)
     this.startTime = performance.now()
+    this.lastFpsTime = performance.now()
     this.tick()
   }
 
   private tick = (): void => {
     this.rafId = requestAnimationFrame(this.tick)
     if (!this.renderer || !this.material) return
-    this.material.uniforms.uTime.value = (performance.now() - this.startTime) / 1000
-    this.renderer.render(this.scene, this.camera)
+
+    const now = performance.now()
+    this.material.uniforms.uTime.value = (now - this.startTime) / 1000
+
+    this.frameCount++
+    if (now - this.lastFpsTime >= 1000) {
+      this.onFps?.(this.frameCount)
+      this.frameCount = 0
+      this.lastFpsTime = now
+    }
+
+    try {
+      this.renderer.render(this.scene, this.camera)
+    } catch {
+      // Shader runtime error — silently skip frame
+    }
+  }
+
+  private setupResize(canvas: HTMLCanvasElement): void {
+    this.resizeObserver = new ResizeObserver(() => this.handleResize(canvas))
+    this.resizeObserver.observe(canvas.parentElement ?? canvas)
+  }
+
+  private handleResize(canvas: HTMLCanvasElement): void {
+    if (!this.renderer) return
+    const w = canvas.clientWidth
+    const h = canvas.clientHeight
+    if (w === 0 || h === 0) return
+    this.renderer.setSize(w, h, false)
+    const uniforms = this.material?.uniforms
+    if (uniforms) {
+      ;(uniforms.uResolution.value as THREE.Vector2).set(w, h)
+      uniforms.uAspect.value = w / h
+    }
+  }
+
+  private setupMouse(canvas: HTMLCanvasElement): void {
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect()
+      const x = (e.clientX - rect.left) / rect.width
+      const y = 1 - (e.clientY - rect.top) / rect.height
+      if (this.material) {
+        ;(this.material.uniforms.uMouse.value as THREE.Vector2).set(x, y)
+      }
+    })
   }
 
   setShader(vertex: string, fragment: string): void {
     if (!this.material) return
-    this.material.vertexShader = vertex
-    this.material.fragmentShader = fragment
+    this.material.vertexShader = ShaderCompiler.resolveIncludes(vertex)
+    this.material.fragmentShader = ShaderCompiler.resolveIncludes(fragment)
     this.material.needsUpdate = true
   }
 
-  setUniform(id: string, value: UniformValue): void {
-    if (!this.material) return
-    if (!(id in this.material.uniforms)) {
-      this.material.uniforms[id] = { value: this.toThreeValue(id, value) }
-    } else {
-      const current = this.material.uniforms[id].value
-      if (current instanceof THREE.Vector2 && Array.isArray(value)) {
-        current.set((value as [number, number])[0], (value as [number, number])[1])
-      } else if (current instanceof THREE.Color && typeof value === 'string') {
-        current.set(value)
-      } else {
-        this.material.uniforms[id].value = value
-      }
+  initUniforms(params: ParamDef[], fragment?: string): void {
+    this.uniformManager.initFromParams(params)
+
+    // Inject placeholder texture for image-fx shaders
+    if (fragment?.includes('uTexture')) {
+      this.uniformManager.getAll()['uTexture'] = { value: ShaderPlayer.createPlaceholderTexture() }
+    }
+
+    if (this.material) {
+      this.material.uniforms = this.uniformManager.getAll() as Record<string, THREE.IUniform>
+      this.material.needsUpdate = true
     }
   }
 
-  private toThreeValue(id: string, value: UniformValue): unknown {
-    if (typeof value === 'string' && value.startsWith('#')) return new THREE.Color(value)
-    if (Array.isArray(value) && value.length === 2) return new THREE.Vector2(value[0], value[1])
-    return value
+  setUniform(id: string, value: UniformValue): void {
+    this.uniformManager.setUniform(id, value)
+  }
+
+  static createPlaceholderTexture(): THREE.DataTexture {
+    const size = 256
+    const data = new Uint8Array(size * size * 4)
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const i = (y * size + x) * 4
+        data[i]     = Math.floor((x / size) * 200 + 55)
+        data[i + 1] = Math.floor((y / size) * 150 + 50)
+        data[i + 2] = Math.floor(((x + y) / (size * 2)) * 180 + 75)
+        data[i + 3] = 255
+      }
+    }
+    const tex = new THREE.DataTexture(data, size, size, THREE.RGBAFormat)
+    tex.needsUpdate = true
+    return tex
   }
 
   destroy(): void {
     if (this.rafId !== null) cancelAnimationFrame(this.rafId)
+    this.resizeObserver?.disconnect()
     this.geometry?.dispose()
     this.material?.dispose()
     this.renderer?.dispose()
