@@ -34,6 +34,7 @@ export class ShaderPlayer {
 
   init(canvas: HTMLCanvasElement, onFps?: (fps: number) => void): void {
     this.onFps = onFps
+    this.uniformManager.initFromParams([])  // seed auto-uniforms before first tick
 
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: false })
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
