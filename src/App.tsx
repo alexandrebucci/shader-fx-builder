@@ -1,3 +1,5 @@
+import { BuilderPage } from '@/pages/BuilderPage'
+
 export default function App() {
-  return null
+  return <BuilderPage />
 }
