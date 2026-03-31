@@ -11,7 +11,7 @@ export function ErrorOverlay() {
         Shader compilation errors
       </p>
       {compilationErrors.map((err, i) => (
-        <div key={i} className="text-red-400 text-xs font-mono leading-relaxed">
+        <div key={`${err.line ?? 'noLine'}-${i}`} className="text-red-400 text-xs font-mono leading-relaxed">
           {err.line != null ? (
             <span>
               <span className="text-orange-400">Line {err.line}:</span> {err.message}

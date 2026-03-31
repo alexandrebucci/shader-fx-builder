@@ -1,12 +1,7 @@
 import { create } from 'zustand'
 import type { ShaderDef, Preset } from '@/shaders/types'
 import type { UniformValue } from '@/core/uniforms/types'
-
-interface CompilationError {
-  line: number
-  message: string
-  type: 'error' | 'warning'
-}
+import type { CompilationError } from '@/core/player/ShaderCompiler'
 
 interface ShaderStore {
   activeShader: ShaderDef | null

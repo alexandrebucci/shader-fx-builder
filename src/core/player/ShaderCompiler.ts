@@ -1,4 +1,4 @@
-interface CompilationError {
+export interface CompilationError {
   line: number
   message: string
   type: 'error' | 'warning'
