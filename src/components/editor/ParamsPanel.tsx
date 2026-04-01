@@ -6,7 +6,25 @@ import {
   SelectControl,
   Vec2Control,
 } from './controls'
-import type { ParamDef } from '@/shaders/types'
+import type { ParamDef, ShaderDef } from '@/shaders/types'
+import type { UniformValue } from '@/core/uniforms/types'
+
+function isVisible(
+  param: ParamDef,
+  uniformValues: Record<string, UniformValue>,
+  activeShader: ShaderDef,
+): boolean {
+  if (!param.visibleIf) return true
+  const { param: refId } = param.visibleIf
+  const refParam = activeShader.params.find((p) => p.id === refId)
+  const currentValue = uniformValues[refId] ?? refParam?.default
+
+  if ('value' in param.visibleIf) {
+    return String(currentValue) === String(param.visibleIf.value)
+  } else {
+    return Number(currentValue) >= param.visibleIf.minValue
+  }
+}
 
 function ParamRow({ param }: { param: ParamDef }) {
   const value = useShaderStore((s) => s.uniformValues[param.id] ?? param.default)
@@ -72,6 +90,7 @@ function ParamRow({ param }: { param: ParamDef }) {
 
 export function ParamsPanel() {
   const activeShader = useShaderStore((s) => s.activeShader)
+  const uniformValues = useShaderStore((s) => s.uniformValues)
 
   if (!activeShader) {
     return (
@@ -81,9 +100,13 @@ export function ParamsPanel() {
     )
   }
 
+  const visibleParams = activeShader.params.filter((p) =>
+    isVisible(p, uniformValues, activeShader),
+  )
+
   return (
     <div className="overflow-y-auto h-full px-4">
-      {activeShader.params.map((param) => (
+      {visibleParams.map((param) => (
         <ParamRow key={param.id} param={param} />
       ))}
     </div>
