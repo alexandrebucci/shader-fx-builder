@@ -3,6 +3,7 @@ import type { ParamDef } from '@/shaders/types'
 import type { UniformValue } from '../uniforms/types'
 import { UniformManager } from '../uniforms/UniformManager'
 import { ShaderCompiler } from './ShaderCompiler'
+import { SNIPPETS } from '@/shaders/snippets'
 
 const DEFAULT_VERTEX = /* glsl */`
 varying vec2 vUv;
@@ -50,7 +51,6 @@ export class ShaderPlayer {
     this.scene.add(mesh)
 
     this.setupResize(canvas)
-    this.setupMouse(canvas)
     this.handleResize(canvas)
     this.startTime = performance.now()
     this.lastFpsTime = performance.now()
@@ -96,21 +96,10 @@ export class ShaderPlayer {
     }
   }
 
-  private setupMouse(canvas: HTMLCanvasElement): void {
-    canvas.addEventListener('mousemove', (e) => {
-      const rect = canvas.getBoundingClientRect()
-      const x = (e.clientX - rect.left) / rect.width
-      const y = 1 - (e.clientY - rect.top) / rect.height
-      if (this.material) {
-        ;(this.material.uniforms.uMouse.value as THREE.Vector2).set(x, y)
-      }
-    })
-  }
-
   setShader(vertex: string, fragment: string): void {
     if (!this.material) return
-    this.material.vertexShader = ShaderCompiler.resolveIncludes(vertex)
-    this.material.fragmentShader = ShaderCompiler.resolveIncludes(fragment)
+    this.material.vertexShader = ShaderCompiler.resolveIncludes(vertex, SNIPPETS)
+    this.material.fragmentShader = ShaderCompiler.resolveIncludes(fragment, SNIPPETS)
     this.material.needsUpdate = true
   }
 
