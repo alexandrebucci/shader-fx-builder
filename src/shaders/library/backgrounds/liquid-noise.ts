@@ -72,10 +72,11 @@ void main() {
   vec2 uv = vUv;
   float t = uTime * uSpeed;
   vec2 p = (uv - 0.5) * uScale;
+  p.x *= uAspect;  // correct for non-square canvas
 
   float f;
   if (uDomainWarp < 0.5) {
-    f = sampleNoise(p);
+    f = sampleNoise(p + vec2(t * 0.1, t * 0.05));
   } else if (uDomainWarp < 1.5) {
     float n1 = sampleNoise(p + vec2(t * 0.3, t * 0.1));
     float n2 = sampleNoise(p + vec2(n1 * uDistortion, t * 0.2));
