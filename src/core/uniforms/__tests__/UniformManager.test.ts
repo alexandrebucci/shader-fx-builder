@@ -30,8 +30,8 @@ describe('UniformManager', () => {
     const mgr = new UniformManager()
     mgr.initFromParams(liquidNoise.params)
     const all = mgr.getAll()
-    // uColorA default is '#0a0a2e' — should be a THREE.Color instance
-    expect(all.uColorA.value).toBeTruthy()
-    expect(typeof (all.uColorA.value as any).r).toBe('number')
+    // uColor1 default is '#0a0a2e' — should be a THREE.Color instance
+    expect(all.uColor1.value).toBeTruthy()
+    expect(typeof (all.uColor1.value as any).r).toBe('number')
   })
 })

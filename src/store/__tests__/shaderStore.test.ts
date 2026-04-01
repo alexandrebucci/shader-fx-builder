@@ -17,7 +17,7 @@ describe('shaderStore', () => {
     const { uniformValues, activeShader } = useShaderStore.getState()
     expect(activeShader?.id).toBe('liquid-noise')
     expect(uniformValues.uSpeed).toBe(0.4)
-    expect(uniformValues.uColorA).toBe('#0a0a2e')
+    expect(uniformValues.uColor1).toBe('#0a0a2e')
   })
 
   it('setUniformValue updates a single value', () => {

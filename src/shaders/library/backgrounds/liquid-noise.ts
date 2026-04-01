@@ -36,13 +36,15 @@ float customFbm(vec2 p) {
   float v = 0.0;
   float a = 0.5;
   float freq = 1.0;
+  float norm = 0.0;
   for (int i = 0; i < 8; i++) {
     if (i >= int(uOctaves)) break;
     v += a * snoise(p * freq);
+    norm += a;
     freq *= uLacunarity;
     a *= uPersistence;
   }
-  return v * 0.5 + 0.5;
+  return v / norm * 0.5 + 0.5;
 }
 
 float sampleNoise(vec2 p) {
@@ -59,6 +61,7 @@ vec3 getColor(int i) {
 }
 
 vec3 paletteGradient(float f, int count) {
+  // When f==1.0, idx is clamped to count-2 and t==1.0, so mix returns getColor(count-1) which is correct.
   float scaled = f * float(count - 1);
   int idx = clamp(int(scaled), 0, count - 2);
   float t = scaled - float(idx);
@@ -70,18 +73,16 @@ void main() {
   float t = uTime * uSpeed;
   vec2 p = (uv - 0.5) * uScale;
 
-  float n1 = sampleNoise(p + vec2(t * 0.3, t * 0.1));
-  float n2 = sampleNoise(p + vec2(n1 * uDistortion, t * 0.2));
-
   float f;
   if (uDomainWarp < 0.5) {
-    // No warp
     f = sampleNoise(p);
   } else if (uDomainWarp < 1.5) {
-    // One warp pass (original behavior)
+    float n1 = sampleNoise(p + vec2(t * 0.3, t * 0.1));
+    float n2 = sampleNoise(p + vec2(n1 * uDistortion, t * 0.2));
     f = sampleNoise(p + n2 * uDistortion + vec2(t * 0.1));
   } else {
-    // Two warp passes
+    float n1 = sampleNoise(p + vec2(t * 0.3, t * 0.1));
+    float n2 = sampleNoise(p + vec2(n1 * uDistortion, t * 0.2));
     float n3 = sampleNoise(p + vec2(n2 * uDistortion, t * 0.15));
     f = sampleNoise(p + n3 * uDistortion + vec2(t * 0.1));
   }
@@ -173,11 +174,13 @@ export const liquidNoise: ShaderDef = {
     {
       id: 'uDomainWarp',
       label: 'Domain Warp',
-      type: 'range',
-      default: 1,
-      min: 0,
-      max: 2,
-      step: 1,
+      type: 'select',
+      default: '1',
+      options: [
+        { value: '0', label: 'None' },
+        { value: '1', label: '1 Pass' },
+        { value: '2', label: '2 Passes' },
+      ],
     },
     {
       id: 'uColorCount',
@@ -205,6 +208,7 @@ export const liquidNoise: ShaderDef = {
       label: 'Color 3',
       type: 'color',
       default: '#1a0050',
+      visibleIf: { param: 'uColorCount', minValue: 3 },
     },
     {
       id: 'uColor4',
@@ -251,13 +255,13 @@ export const liquidNoise: ShaderDef = {
         uPersistence: 0.5,
         uLacunarity: 2.0,
         uDistortion: 1.0,
-        uDomainWarp: 1,
+        uDomainWarp: '1',
         uColorCount: 3,
         uColor1: '#001433',
         uColor2: '#005c99',
         uColor3: '#00b3b3',
-        uColor4: '#4a0080',
-        uColor5: '#7c3aed',
+        uColor4: '#007acc',
+        uColor5: '#00e5ff',
         uBrightness: 0.9,
         uContrast: 1.1,
       },
@@ -273,13 +277,13 @@ export const liquidNoise: ShaderDef = {
         uPersistence: 0.6,
         uLacunarity: 2.0,
         uDistortion: 1.2,
-        uDomainWarp: 1,
+        uDomainWarp: '1',
         uColorCount: 4,
         uColor1: '#001a0d',
         uColor2: '#00cc66',
         uColor3: '#6600cc',
         uColor4: '#ff66cc',
-        uColor5: '#7c3aed',
+        uColor5: '#ffffff',
         uBrightness: 1.0,
         uContrast: 1.2,
       },
@@ -295,13 +299,13 @@ export const liquidNoise: ShaderDef = {
         uPersistence: 0.5,
         uLacunarity: 2.0,
         uDistortion: 2.5,
-        uDomainWarp: 2,
+        uDomainWarp: '2',
         uColorCount: 3,
         uColor1: '#1a0000',
         uColor2: '#cc3300',
         uColor3: '#ffaa00',
-        uColor4: '#4a0080',
-        uColor5: '#7c3aed',
+        uColor4: '#ff6600',
+        uColor5: '#ffdd00',
         uBrightness: 1.2,
         uContrast: 1.4,
       },
@@ -317,13 +321,13 @@ export const liquidNoise: ShaderDef = {
         uPersistence: 0.5,
         uLacunarity: 2.0,
         uDistortion: 1.2,
-        uDomainWarp: 1,
+        uDomainWarp: '1',
         uColorCount: 2,
         uColor1: '#000000',
         uColor2: '#ffffff',
-        uColor3: '#1a0050',
-        uColor4: '#4a0080',
-        uColor5: '#7c3aed',
+        uColor3: '#333333',
+        uColor4: '#999999',
+        uColor5: '#cccccc',
         uBrightness: 1.0,
         uContrast: 1.8,
       },
