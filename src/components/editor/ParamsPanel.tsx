@@ -9,7 +9,7 @@ import {
 import type { ParamDef } from '@/shaders/types'
 
 function ParamRow({ param }: { param: ParamDef }) {
-  const value = useShaderStore((s) => s.uniformValues[param.id])
+  const value = useShaderStore((s) => s.uniformValues[param.id] ?? param.default)
   const setUniformValue = useShaderStore((s) => s.setUniformValue)
 
   const control = (() => {

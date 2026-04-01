@@ -4,58 +4,63 @@
 
 ---
 
-## Slice 1 — liquid-noise end-to-end
+## Slice 1 — liquid-noise end-to-end ✅
 > **Objectif :** Un shader qui tourne, un slider qui change quelque chose.
 
-- [ ] Scaffolding projet (Vite + React + TS, deps, shadcn, path aliases, Vitest)
-- [ ] Types : `ShaderDef`, `ParamDef`, `Preset` (shaders/types.ts)
-- [ ] Types : `UniformDef`, `UniformValue` (core/uniforms/types.ts)
-- [ ] `ShaderPlayer` : init, setShader, setUniform, render loop (uTime), destroy
-- [ ] `liquid-noise` ShaderDef avec noise inline (uSpeed, uScale, uColorA, uColorB, uDistortion)
-- [ ] `shaderStore` : setShader, setUniformValue, resetUniforms
-- [ ] `PreviewCanvas` (basic) : mount player, sync activeShader + uniformValues
-- [ ] `SliderControl` + layout minimal `BuilderPage`
-- [ ] ✅ Milestone : liquid-noise tourne avec un slider Speed fonctionnel
+- [x] Scaffolding projet (Vite + React + TS, deps, shadcn, path aliases, Vitest)
+- [x] Types : `ShaderDef`, `ParamDef`, `Preset` (shaders/types.ts)
+- [x] Types : `UniformDef`, `UniformValue` (core/uniforms/types.ts)
+- [x] `ShaderPlayer` : init, setShader, setUniform, render loop (uTime), destroy
+- [x] `liquid-noise` ShaderDef avec noise inline (uSpeed, uScale, uColorA, uColorB, uDistortion)
+- [x] `shaderStore` : setShader, setUniformValue, resetUniforms
+- [x] `PreviewCanvas` (basic) : mount player, sync activeShader + uniformValues
+- [x] `SliderControl` + layout minimal `BuilderPage`
+- [x] ✅ Milestone : liquid-noise tourne avec un slider Speed fonctionnel
 
-## Slice 2 — Feature set complet
+## Slice 2 — Feature set complet ✅
 > **Objectif :** Tous les types de contrôles, uniforms auto, layout final.
 
-- [ ] `UniformManager` + `defaults.ts` (uTime, uResolution, uAspect, uMouse)
-- [ ] `ShaderCompiler` : validation GLSL, parsing erreurs
-- [ ] `uiStore` (theme, activeTab, fps) + `shaderStore` complet (presets)
-- [ ] `ColorControl` (react-colorful + swatch + input HEX)
-- [ ] `ToggleControl` + `SelectControl` + `Vec2Control`
-- [ ] `ParamsPanel` (rendu dynamique selon param.type)
-- [ ] `PresetsPanel` (lister, charger, sauvegarder en localStorage)
-- [ ] `FPSCounter` + `ErrorOverlay`
-- [ ] `ShaderPlayer` complet : resize (ResizeObserver), mouse tracking, init typed uniforms
-- [ ] `PreviewCanvas` complet : tous uniforms, erreurs, flag StrictMode
-- [ ] `BuilderPage` : 3 panneaux, theme toggle, onglets Params / Presets
-- [ ] ✅ Milestone : liquid-noise avec tous les types de params, UI complète
+- [x] `UniformManager` + `defaults.ts` (uTime, uResolution, uAspect, uMouse)
+- [x] `ShaderCompiler` : validation GLSL, parsing erreurs
+- [x] `uiStore` (theme, activeTab, fps) + `shaderStore` complet (presets)
+- [x] `ColorControl` (react-colorful + swatch + input HEX)
+- [x] `ToggleControl` + `SelectControl` + `Vec2Control`
+- [x] `ParamsPanel` (rendu dynamique selon param.type)
+- [x] `PresetsPanel` (lister, charger, sauvegarder en localStorage)
+- [x] `FPSCounter` + `ErrorOverlay`
+- [x] `ShaderPlayer` complet : resize (ResizeObserver), mouse tracking, init typed uniforms
+- [x] `PreviewCanvas` complet : tous uniforms, FPSCounter + ErrorOverlay overlays
+- [x] `BuilderPage` : 3 panneaux, theme toggle, onglets Params / Presets
+- [x] ✅ Milestone : liquid-noise avec tous les types de params, UI complète
 
-## Slice 3 — 5 shaders restants + snippets
+## Bugs ouverts
+- [x] Sliders / controls inutilisables à la souris → canvas `pointer-events-none`, mousemove sur conteneur
+- [x] **Régression** : clic et drag sur les sliders (ParamsPanel) non fonctionnels — la valeur ne change pas ; de plus, toute interaction avec un slider provoque un canvas WebGL noir (le shader actif disparaît)
+  - **Root cause** : Base UI `onValueChange` appelle le callback avec un `number` scalaire (pas `number[]`). `(scalar as number[])[0]` = `undefined` → uniform `uSpeed` = `undefined` → shader noir. Fix : `Array.isArray(vals) ? vals[0] : vals` dans `SliderControl` et `Vec2Control`.
+
+## Slice 3 — 5 shaders restants + snippets ✅
 > **Objectif :** Bibliothèque GLSL et 6 effets fonctionnels.
 
-- [ ] `noise.glsl` + `color.glsl` + `math.glsl` snippets
-- [ ] Système `// #include <name>` dans `ShaderCompiler.resolveIncludes()`
-- [ ] Refactorer liquid-noise pour utiliser `// #include <noise>`
-- [ ] `gradient-flow` shader (backgrounds)
-- [ ] `particles-field` shader (backgrounds)
-- [ ] `wave-distort` shader (image-fx, DataTexture placeholder)
-- [ ] `glitch` shader (image-fx)
-- [ ] `chromatic-aberration` shader (image-fx)
-- [ ] `SHADER_LIBRARY` index + validation au démarrage
-- [ ] ✅ Milestone : 6 shaders compilent et rendent
+- [x] `noise.glsl` + `color.glsl` + `math.glsl` snippets
+- [x] Système `// #include <name>` câblé dans `ShaderPlayer.setShader()` via `SNIPPETS`
+- [x] Refactorer liquid-noise pour utiliser `// #include <noise>`
+- [x] `gradient-flow` shader (backgrounds)
+- [x] `particles-field` shader (backgrounds)
+- [x] `wave-distort` shader (image-fx, DataTexture placeholder)
+- [x] `glitch` shader (image-fx)
+- [x] `chromatic-aberration` shader (image-fx)
+- [x] `SHADER_LIBRARY` index (6 shaders enregistrés)
+- [x] ✅ Milestone : 6 shaders compilent et rendent
 
-## Slice 4 — Galerie
+## Slice 4 — Galerie ✅
 > **Objectif :** Découverte intuitive des effets.
 
-- [ ] `ShaderCard` (nom, badge catégorie, preview au hover)
-- [ ] `Gallery` (liste verticale, card active surlignée)
-- [ ] `GalleryFilters` (stub — no-op pour MVP)
-- [ ] Connecter galerie → `shaderStore.setShader`
-- [ ] `BuilderPage` final : galerie + canvas + params en 3 colonnes
-- [ ] ✅ Milestone : builder complet avec galerie fonctionnelle
+- [x] `ShaderCard` (nom, badge catégorie)
+- [x] `Gallery` (liste verticale, card active surlignée)
+- [x] `GalleryFilters` (stub — no-op pour MVP)
+- [x] Connecter galerie → `shaderStore.setShader`
+- [x] `BuilderPage` final : galerie + canvas + params en 3 colonnes
+- [x] ✅ Milestone : builder complet avec galerie fonctionnelle
 
 ---
 

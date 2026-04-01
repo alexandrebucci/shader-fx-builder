@@ -19,7 +19,7 @@ export function SelectControl({ param, value, onChange }: Props) {
   return (
     <div className="flex flex-col gap-1.5">
       <span className={`text-xs ${isModified ? 'text-foreground' : 'text-muted-foreground'}`}>{param.label}</span>
-      <Select value={value} onValueChange={onChange}>
+      <Select value={value} onValueChange={(v) => v !== null && onChange(v)}>
         <SelectTrigger className="h-8 text-xs">
           <SelectValue />
         </SelectTrigger>

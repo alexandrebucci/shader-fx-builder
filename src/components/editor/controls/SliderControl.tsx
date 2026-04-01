@@ -25,7 +25,7 @@ export function SliderControl({ param, value, onChange }: Props) {
         max={param.max ?? 1}
         step={param.step ?? 0.01}
         value={[value]}
-        onValueChange={([v]) => onChange(v)}
+        onValueChange={(vals) => onChange(Array.isArray(vals) ? vals[0] : (vals as number))}
       />
     </div>
   )

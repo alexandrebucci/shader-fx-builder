@@ -25,9 +25,9 @@ export function Vec2Control({ param, value, onChange }: Props) {
             max={param.max ?? 1}
             step={param.step ?? 0.01}
             value={[value[i]]}
-            onValueChange={([v]) => {
+            onValueChange={(vals) => {
               const next: [number, number] = [...value] as [number, number]
-              next[i] = v
+              next[i] = Array.isArray(vals) ? vals[0] : (vals as number)
               onChange(next)
             }}
           />

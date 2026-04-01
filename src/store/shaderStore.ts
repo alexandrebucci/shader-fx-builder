@@ -2,8 +2,10 @@ import { create } from 'zustand'
 import type { ShaderDef, Preset } from '@/shaders/types'
 import type { UniformValue } from '@/core/uniforms/types'
 import type { CompilationError } from '@/core/player/ShaderCompiler'
+import { SHADER_LIBRARY } from '@/shaders/library'
 
 interface ShaderStore {
+  shaders: ShaderDef[]
   activeShader: ShaderDef | null
   uniformValues: Record<string, UniformValue>
   compilationErrors: CompilationError[] | null
@@ -17,6 +19,7 @@ interface ShaderStore {
 }
 
 export const useShaderStore = create<ShaderStore>((set, get) => ({
+  shaders: SHADER_LIBRARY,
   activeShader: null,
   uniformValues: {},
   compilationErrors: null,
