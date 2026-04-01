@@ -11,6 +11,7 @@ export interface ParamDef {
   options?: { value: string; label: string }[]
   unit?: string
   description?: string
+  visibleIf?: { param: string; value?: number | string | boolean; minValue?: number }
 }
 
 export interface Preset {
