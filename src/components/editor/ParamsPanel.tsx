@@ -20,7 +20,7 @@ function isVisible(
   const currentValue = uniformValues[refId] ?? refParam?.default
 
   if ('value' in param.visibleIf) {
-    return String(currentValue) === String(param.visibleIf.value)
+    return currentValue === param.visibleIf.value
   } else {
     return Number(currentValue) >= param.visibleIf.minValue
   }
