@@ -255,3 +255,41 @@ Performance, accessibilité, tests, onboarding, documentation.
 - **Post-processing** : Three.js `EffectComposer` permet d'ajouter des passes (bloom, FXAA, etc.) sur les effets existants — à envisager pour les effets premium
 - **Web Worker pour le rendu** : optionnel pour le MVP, à ajouter si des lags UI sont constatés
 - **Système de presets partagés** : une API backend minimale pourrait permettre le partage communautaire (hors scope MVP)
+
+---
+
+## État d'implémentation — 2026-04-02
+
+### MVP (Phases 1–3) — ✅ Terminé
+
+| Slice | Statut | Notes |
+|-------|--------|-------|
+| 1 — liquid-noise bout en bout | ✅ | Canvas, ShaderPlayer, 1 slider, rendu live |
+| 2 — Types de params, store, layout | ✅ | range, color, select, toggle, vec2, ParamsPanel, PresetsPanel |
+| 3 — 5 shaders restants + snippets GLSL | ✅ | gradient-flow, particles-field, wave-distort, glitch, chromatic-aberration |
+| 4 — Galerie + layout split-screen | ✅ | Galerie verticale 180px, canvas flex, params 280px |
+
+### Améliorations post-MVP appliquées
+
+**liquid-noise — 6 params ajoutés (2026-04-02)**
+Fichier : `src/shaders/library/backgrounds/liquid-noise.ts`
+
+| Param | Uniform GLSL | Effet |
+|-------|-------------|-------|
+| Angle | `uAngle` | Rotation de l'espace de sampling |
+| Noise Freq | `uNoiseFreq` | Fréquence du bruit indépendante du zoom |
+| Amplitude | `uAmplitude` | Intensité des pics/vallées avant mapping palette |
+| Blur | `uBlur` | Blur 5-samples (box average) |
+| Color Offset | `uColorOffset` | Décalage chromatique par canal R/G/B |
+| Pixelation | `uPixelation` | Quantisation UV en blocs pixel |
+
+Le GLSL a été refactorisé : helper `computeF(vec2 p)` extrait du `main()` pour permettre le multi-sampling (blur + color offset). Variable globale `t` déclarée au niveau module. Les 4 presets ont été mis à jour avec les valeurs neutres des nouveaux params.
+
+### Prochaines étapes (V1)
+
+- [ ] Phase 4 — Interactions (mouse/scroll/drag bindables aux params)
+- [ ] Phase 5 — Image FX scroll (canvas overlay sur `<img>`)
+- [ ] Phase 7 — Export (HTML standalone, module ES, React component)
+- [ ] Phase 7.5 — Capture PNG/vidéo
+- [ ] Phase 7.7 — react-router-dom + partage URL
+- [ ] Phase 8 — Tests Playwright, accessibilité, onboarding
