@@ -8,6 +8,12 @@ import {
 } from './controls'
 import type { ParamDef, ShaderDef } from '@/shaders/types'
 import type { UniformValue } from '@/core/uniforms/types'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 
 function isVisible(
   param: ParamDef,
@@ -88,6 +94,24 @@ function ParamRow({ param }: { param: ParamDef }) {
   )
 }
 
+function groupParams(
+  params: ParamDef[],
+): { name: string; params: ParamDef[] }[] {
+  const groups: { name: string; params: ParamDef[] }[] = []
+  const groupIndex: Record<string, number> = {}
+
+  for (const param of params) {
+    const name = param.group ?? 'General'
+    if (!(name in groupIndex)) {
+      groupIndex[name] = groups.length
+      groups.push({ name, params: [] })
+    }
+    groups[groupIndex[name]].params.push(param)
+  }
+
+  return groups
+}
+
 export function ParamsPanel() {
   const activeShader = useShaderStore((s) => s.activeShader)
   const uniformValues = useShaderStore((s) => s.uniformValues)
@@ -104,11 +128,40 @@ export function ParamsPanel() {
     isVisible(p, uniformValues, activeShader),
   )
 
+  const hasGroups = visibleParams.some((p) => p.group !== undefined)
+
+  if (!hasGroups) {
+    return (
+      <div className="overflow-y-auto h-full px-4">
+        {visibleParams.map((param) => (
+          <ParamRow key={param.id} param={param} />
+        ))}
+      </div>
+    )
+  }
+
+  const groups = groupParams(visibleParams)
+
   return (
-    <div className="overflow-y-auto h-full px-4">
-      {visibleParams.map((param) => (
-        <ParamRow key={param.id} param={param} />
-      ))}
+    <div className="overflow-y-auto h-full">
+      <Accordion
+        type="multiple"
+        defaultValue={groups.map((g) => g.name)}
+        className="w-full"
+      >
+        {groups.map((group) => (
+          <AccordionItem key={group.name} value={group.name}>
+            <AccordionTrigger className="px-4 text-sm font-medium">
+              {group.name}
+            </AccordionTrigger>
+            <AccordionContent className="px-4 pb-0">
+              {group.params.map((param) => (
+                <ParamRow key={param.id} param={param} />
+              ))}
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
     </div>
   )
 }
