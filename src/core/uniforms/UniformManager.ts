@@ -22,6 +22,11 @@ export class UniformManager {
   }
 
   setUniform(id: string, value: UniformValue): void {
+    if (typeof value === 'boolean') {
+      if (!(id in this.uniforms)) this.uniforms[id] = { value: value ? 1.0 : 0.0 }
+      else this.uniforms[id].value = value ? 1.0 : 0.0
+      return
+    }
     if (!(id in this.uniforms)) {
       this.uniforms[id] = { value: this.convertValue(value) }
       return
@@ -55,6 +60,7 @@ export class UniformManager {
       return new THREE.Vector2(v[0], v[1])
     }
     if (param.type === 'select') return parseFloat(param.default as string)
+    if (param.type === 'toggle') return (param.default as boolean) ? 1.0 : 0.0
     return param.default
   }
 

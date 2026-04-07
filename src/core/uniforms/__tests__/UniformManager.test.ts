@@ -34,4 +34,30 @@ describe('UniformManager', () => {
     expect(all.uColor1.value).toBeTruthy()
     expect(typeof (all.uColor1.value as any).r).toBe('number')
   })
+
+  it('toggle param initializes as 1.0 when default is true', () => {
+    const mgr = new UniformManager()
+    mgr.initFromParams([
+      { id: 'uPolar', label: 'Polar', type: 'toggle', default: false },
+    ])
+    expect(mgr.getAll().uPolar.value).toBe(0.0)
+  })
+
+  it('setUniform converts boolean true to 1.0', () => {
+    const mgr = new UniformManager()
+    mgr.initFromParams([
+      { id: 'uPolar', label: 'Polar', type: 'toggle', default: false },
+    ])
+    mgr.setUniform('uPolar', true)
+    expect(mgr.getAll().uPolar.value).toBe(1.0)
+  })
+
+  it('setUniform converts boolean false to 0.0', () => {
+    const mgr = new UniformManager()
+    mgr.initFromParams([
+      { id: 'uPolar', label: 'Polar', type: 'toggle', default: false },
+    ])
+    mgr.setUniform('uPolar', false)
+    expect(mgr.getAll().uPolar.value).toBe(0.0)
+  })
 })

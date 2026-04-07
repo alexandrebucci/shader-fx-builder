@@ -4,6 +4,7 @@ export interface ParamDef {
   id: string
   label: string
   type: ParamType
+  group?: string
   default: number | string | boolean | [number, number]
   min?: number
   max?: number
