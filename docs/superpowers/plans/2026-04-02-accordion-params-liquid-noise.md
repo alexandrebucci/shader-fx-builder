@@ -32,7 +32,7 @@
 - Modify: `src/core/uniforms/UniformManager.ts`
 - Modify: `src/core/uniforms/__tests__/UniformManager.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 In `src/core/uniforms/__tests__/UniformManager.test.ts`, add after the last existing `it()`:
 
@@ -64,7 +64,7 @@ it('setUniform converts boolean false to 0.0', () => {
 })
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 ```bash
 npx vitest run src/core/uniforms/__tests__/UniformManager.test.ts
@@ -72,7 +72,7 @@ npx vitest run src/core/uniforms/__tests__/UniformManager.test.ts
 
 Expected: last 3 tests FAIL (toggle initializes as `false` boolean, not `0.0` float).
 
-- [ ] **Step 3: Add `group` to `ParamDef` in `src/shaders/types.ts`**
+- [x] **Step 3: Add `group` to `ParamDef` in `src/shaders/types.ts`**
 
 Replace the `ParamDef` interface:
 
@@ -95,7 +95,7 @@ export interface ParamDef {
 }
 ```
 
-- [ ] **Step 4: Fix toggle→float in `src/core/uniforms/UniformManager.ts`**
+- [x] **Step 4: Fix toggle→float in `src/core/uniforms/UniformManager.ts`**
 
 Replace `toThreeValue`:
 
@@ -125,7 +125,7 @@ setUniform(id: string, value: UniformValue): void {
     // ... rest unchanged
 ```
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [x] **Step 5:** Run tests to verify they pass**
 
 ```bash
 npx vitest run src/core/uniforms/__tests__/UniformManager.test.ts
@@ -133,7 +133,7 @@ npx vitest run src/core/uniforms/__tests__/UniformManager.test.ts
 
 Expected: all tests PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6:** Commit**
 
 ```bash
 git add src/shaders/types.ts src/core/uniforms/UniformManager.ts src/core/uniforms/__tests__/UniformManager.test.ts
@@ -330,7 +330,7 @@ export function ParamsPanel() {
 }
 ```
 
-- [ ] **Step 3: Verify app compiles**
+- [x] **Step 3: Verify app compiles**
 
 ```bash
 npx tsc --noEmit
@@ -338,7 +338,7 @@ npx tsc --noEmit
 
 Expected: no errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/components/ui/accordion.tsx src/components/editor/ParamsPanel.tsx
@@ -553,7 +553,7 @@ npx tsc --noEmit
 
 Expected: no errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/shaders/library/backgrounds/liquid-noise.ts
@@ -924,7 +924,7 @@ npx tsc --noEmit
 
 Expected: no errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/shaders/library/backgrounds/liquid-noise.ts
@@ -1011,7 +1011,7 @@ npx vitest run
 
 Expected: all tests PASS.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/shaders/library/backgrounds/liquid-noise.ts

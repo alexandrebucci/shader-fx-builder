@@ -1,4 +1,4 @@
-import { Accordion as AccordionPrimitive } from "@/components/ui/accordion"
+import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion"
 
 import { cn } from "@/lib/utils"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"

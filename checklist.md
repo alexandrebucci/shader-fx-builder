@@ -4,15 +4,15 @@
 
 ---
 
-## Slice 5 — Accordion params + liquid-noise expansion ⬅️ NEXT
+## Slice 5 — Accordion params + liquid-noise expansion ✅
 > **Objectif :** Params groupés en accordéons + 12 nouveaux params sur liquid-noise.
 > **Plan complet :** `docs/superpowers/plans/2026-04-02-accordion-params-liquid-noise.md`
 
-- [ ] **Task 1** — `group?: string` dans `ParamDef` + fix toggle→float dans `UniformManager` (+ tests)
-- [ ] **Task 2** — Install shadcn Accordion + refactor `ParamsPanel` avec groupement
-- [ ] **Task 3** — GLSL liquid-noise : 13 nouveaux uniforms + logique (flow, pulse, symmetry, polar, hue, grain, posterize)
-- [ ] **Task 4** — Params array : `group` sur tous les params existants + 12 nouveaux params
-- [ ] **Task 5** — Presets : valeurs neutres pour les nouveaux params
+- [x] **Task 1** — `group?: string` dans `ParamDef` + fix toggle→float dans `UniformManager` (+ tests)
+- [x] **Task 2** — Install shadcn Accordion + refactor `ParamsPanel` avec groupement
+- [x] **Task 3** — GLSL liquid-noise : 13 nouveaux uniforms + logique (flow, pulse, symmetry, polar, hue, grain, posterize)
+- [x] **Task 4** — Params array : `group` sur tous les params existants + 12 nouveaux params
+- [x] **Task 5** — Presets : valeurs neutres pour les nouveaux params
 
 ---
 

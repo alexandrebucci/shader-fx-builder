@@ -110,9 +110,10 @@ float computeF(vec2 p) {
 void main() {
   vec2 uv = vUv;
 
-  // Pixelation
+  // Pixelation (square pixels in screen space)
   if (uPixelation > 1.5) {
-    uv = floor(uv * uPixelation) / uPixelation;
+    vec2 pixelCount = vec2(uPixelation * uAspect, uPixelation);
+    uv = floor(uv * pixelCount) / pixelCount;
   }
 
   t = uTime * uSpeed + uTimeOffset;
