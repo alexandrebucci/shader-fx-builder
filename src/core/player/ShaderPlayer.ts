@@ -35,7 +35,7 @@ export class ShaderPlayer {
 
   init(canvas: HTMLCanvasElement, onFps?: (fps: number) => void): void {
     this.onFps = onFps
-    this.uniformManager.initFromParams([])  // seed auto-uniforms before first tick
+    this.uniformManager.initFromParams([])
 
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: false })
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -106,9 +106,16 @@ export class ShaderPlayer {
   initUniforms(params: ParamDef[], fragment?: string): void {
     this.uniformManager.initFromParams(params)
 
-    // Inject placeholder texture for image-fx shaders
+    // Placeholder texture for image-fx shaders
     if (fragment?.includes('uTexture')) {
       this.uniformManager.getAll()['uTexture'] = { value: ShaderPlayer.createPlaceholderTexture() }
+    }
+
+    // Initialize texture-type params with a 1×1 black DataTexture (avoids null sampler errors)
+    for (const param of params) {
+      if (param.type === 'texture') {
+        this.setTextureUniform(param.id, null)
+      }
     }
 
     if (this.material) {
@@ -119,6 +126,24 @@ export class ShaderPlayer {
 
   setUniform(id: string, value: UniformValue): void {
     this.uniformManager.setUniform(id, value)
+  }
+
+  setTextureUniform(id: string, url: string | null): void {
+    const uniforms = this.uniformManager.getAll()
+    if (!(id in uniforms)) return
+
+    if (url === null) {
+      const black = new THREE.DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1)
+      black.needsUpdate = true
+      uniforms[id].value = black
+      return
+    }
+
+    new THREE.TextureLoader().load(url, (tex) => {
+      tex.wrapS = THREE.RepeatWrapping
+      tex.wrapT = THREE.RepeatWrapping
+      uniforms[id].value = tex
+    })
   }
 
   static createPlaceholderTexture(): THREE.DataTexture {
