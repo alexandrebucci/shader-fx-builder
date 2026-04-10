@@ -5,6 +5,7 @@ import {
   ToggleControl,
   SelectControl,
   Vec2Control,
+  TextureControl,
 } from './controls'
 import type { ParamDef, ShaderDef } from '@/shaders/types'
 import type { UniformValue } from '@/core/uniforms/types'
@@ -25,11 +26,13 @@ function isVisible(
   const refParam = activeShader.params.find((p) => p.id === refId)
   const currentValue = uniformValues[refId] ?? refParam?.default
 
+  if ('notNull' in param.visibleIf) {
+    return currentValue !== null && currentValue !== undefined && currentValue !== ''
+  }
   if ('value' in param.visibleIf) {
     return currentValue === param.visibleIf.value
-  } else {
-    return Number(currentValue) >= param.visibleIf.minValue
   }
+  return Number(currentValue) >= param.visibleIf.minValue
 }
 
 function ParamRow({ param }: { param: ParamDef }) {
@@ -75,6 +78,14 @@ function ParamRow({ param }: { param: ParamDef }) {
           <Vec2Control
             param={param}
             value={value as [number, number]}
+            onChange={(v) => setUniformValue(param.id, v)}
+          />
+        )
+      case 'texture':
+        return (
+          <TextureControl
+            param={param}
+            value={value as string | null}
             onChange={(v) => setUniformValue(param.id, v)}
           />
         )
