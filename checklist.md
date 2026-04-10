@@ -16,6 +16,23 @@
 
 ---
 
+## Slice 6 — Gradient Flow Extended + Texture System ✅
+> **Objectif :** 9 nouveaux params sur gradient-flow (scale, frequency, offset, grain, vignette, displacement map × 3) + système texture complet (TextureControl, upload, assets statiques).
+> **Spec :** `docs/superpowers/specs/2026-04-07-gradient-flow-extended.md`
+> **Plan :** `docs/superpowers/plans/2026-04-10-gradient-flow-extended.md`
+
+- [x] **Task 1** — Type extensions: `'texture'` ParamType, `TextureAsset`, `notNull` visibleIf, `null` in UniformValue
+- [x] **Task 2** — UniformManager: texture param initializes to null (TDD)
+- [x] **Task 3** — uiStore: `uploadedTextures` slice (add + remove + object URL revocation)
+- [x] **Task 4** — ShaderPlayer: `setTextureUniform(id, url)` + init in `initUniforms`
+- [x] **Task 5** — Assets: generation script + cloud.png + marble.png + voronoi.png
+- [x] **Task 6** — gradient-flow.ts: updated GLSL, 9 new grouped params, 4 presets
+- [x] **Task 7** — TextureControl: thumbnail grid, upload, None, remove uploaded
+- [x] **Task 8** — ParamsPanel: texture case + notNull isVisible
+- [x] **Task 9** — PreviewCanvas: texture routing in uniform sync
+
+---
+
 ## Slice 1 — liquid-noise end-to-end ✅
 > **Objectif :** Un shader qui tourne, un slider qui change quelque chose.
 
