@@ -22,7 +22,6 @@ uniform float uContrast;
 uniform sampler2D uDisplacementMap;
 uniform float uDisplacementStrength;
 uniform float uDisplacementScale;
-uniform float uDisplacementSpeed;
 uniform float uScale;
 uniform float uFrequency;
 uniform vec2  uOffset;
@@ -35,7 +34,7 @@ varying vec2 vUv;
 
 void main() {
   // Sample displacement map (black DataTexture when none selected → disp = 0)
-  vec2 dispUv = vUv * uDisplacementScale + uTime * uDisplacementSpeed * 0.05;
+  vec2 dispUv = vUv * uDisplacementScale;
   float disp = texture2D(uDisplacementMap, dispUv).r;
 
   // Build UV with scale, aspect correction, offset, displacement
@@ -112,11 +111,6 @@ export const gradientFlow: ShaderDef = {
       default: 1.0, min: 0.1, max: 5, step: 0.05,
       visibleIf: { param: 'uDisplacementMap', notNull: true },
     },
-    {
-      id: 'uDisplacementSpeed', label: 'Speed', type: 'range', group: 'Displacement',
-      default: 0.1, min: 0, max: 1, step: 0.01,
-      visibleIf: { param: 'uDisplacementMap', notNull: true },
-    },
   ],
   presets: [
     {
@@ -127,7 +121,7 @@ export const gradientFlow: ShaderDef = {
         uColorA: '#ff6b6b', uColorB: '#feca57', uColorC: '#ff9ff3',
         uContrast: 1.2, uScale: 1.0, uFrequency: 1.0, uOffset: [0, 0],
         uGrain: 0, uVignette: 0,
-        uDisplacementMap: null, uDisplacementStrength: 0, uDisplacementScale: 1.0, uDisplacementSpeed: 0,
+        uDisplacementMap: null, uDisplacementStrength: 0, uDisplacementScale: 1.0,
       },
     },
     {
@@ -138,7 +132,7 @@ export const gradientFlow: ShaderDef = {
         uColorA: '#0a3d62', uColorB: '#38ada9', uColorC: '#60a3bc',
         uContrast: 1.0, uScale: 1.0, uFrequency: 1.0, uOffset: [0, 0],
         uGrain: 0, uVignette: 0,
-        uDisplacementMap: null, uDisplacementStrength: 0, uDisplacementScale: 1.0, uDisplacementSpeed: 0,
+        uDisplacementMap: null, uDisplacementStrength: 0, uDisplacementScale: 1.0,
       },
     },
     {
@@ -152,7 +146,7 @@ export const gradientFlow: ShaderDef = {
         uColorA: '#2c2c54', uColorB: '#706fd3', uColorC: '#aaa6d0',
         uContrast: 1.1, uScale: 1.2, uFrequency: 1.0, uOffset: [0, 0],
         uGrain: 0.05, uVignette: 0.4,
-        uDisplacementMap: cloudUrl, uDisplacementStrength: 0.6, uDisplacementScale: 1.5, uDisplacementSpeed: 0.2,
+        uDisplacementMap: cloudUrl, uDisplacementStrength: 0.6, uDisplacementScale: 1.5,
       },
     },
     {
@@ -163,7 +157,7 @@ export const gradientFlow: ShaderDef = {
         uColorA: '#ff006e', uColorB: '#8338ec', uColorC: '#06d6a0',
         uContrast: 1.8, uScale: 0.8, uFrequency: 3.0, uOffset: [0, 0],
         uGrain: 0.15, uVignette: 0.2,
-        uDisplacementMap: null, uDisplacementStrength: 0, uDisplacementScale: 1.0, uDisplacementSpeed: 0,
+        uDisplacementMap: null, uDisplacementStrength: 0, uDisplacementScale: 1.0,
       },
     },
   ],
