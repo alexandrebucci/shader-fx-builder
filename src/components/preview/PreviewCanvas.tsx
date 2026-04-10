@@ -9,7 +9,7 @@ export function PreviewCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const playerRef = useRef<ShaderPlayer | null>(null)
-  const initialized = useRef(false)
+  const initialized = useRef(false)  // StrictMode guard
 
   const activeShader = useShaderStore((s) => s.activeShader)
   const uniformValues = useShaderStore((s) => s.uniformValues)
