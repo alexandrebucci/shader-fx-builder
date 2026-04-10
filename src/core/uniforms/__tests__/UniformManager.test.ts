@@ -60,4 +60,12 @@ describe('UniformManager', () => {
     mgr.setUniform('uPolar', false)
     expect(mgr.getAll().uPolar.value).toBe(0.0)
   })
+
+  it('texture param initializes with null value', () => {
+    const mgr = new UniformManager()
+    mgr.initFromParams([
+      { id: 'uDisplacementMap', label: 'Displacement Map', type: 'texture', default: null },
+    ])
+    expect(mgr.getAll().uDisplacementMap.value).toBeNull()
+  })
 })
