@@ -142,6 +142,9 @@ export const gradientFlow: ShaderDef = {
       },
     },
     {
+      // Note: uDisplacementMap stores the Vite-resolved asset URL. If a user saves this preset
+      // to localStorage and the build hash changes after a redeploy, the texture URL will be
+      // stale. Bundled presets are not user-saved, so this is not a current issue.
       id: 'smoky',
       label: 'Smoky',
       values: {

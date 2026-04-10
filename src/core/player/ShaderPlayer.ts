@@ -32,6 +32,7 @@ export class ShaderPlayer {
   private onFps?: (fps: number) => void
   private frameCount = 0
   private lastFpsTime = 0
+  private managedTextures = new Set<THREE.Texture>()
 
   init(canvas: HTMLCanvasElement, onFps?: (fps: number) => void): void {
     this.onFps = onFps
@@ -104,6 +105,10 @@ export class ShaderPlayer {
   }
 
   initUniforms(params: ParamDef[], fragment?: string): void {
+    // Dispose previously managed textures before reinitializing (avoids GPU memory leak on shader switch)
+    this.managedTextures.forEach((t) => t.dispose())
+    this.managedTextures.clear()
+
     this.uniformManager.initFromParams(params)
 
     // Placeholder texture for image-fx shaders
@@ -135,6 +140,7 @@ export class ShaderPlayer {
     if (url === null) {
       const black = new THREE.DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1)
       black.needsUpdate = true
+      this.managedTextures.add(black)
       uniforms[id].value = black
       return
     }
@@ -142,6 +148,7 @@ export class ShaderPlayer {
     new THREE.TextureLoader().load(url, (tex) => {
       tex.wrapS = THREE.RepeatWrapping
       tex.wrapT = THREE.RepeatWrapping
+      this.managedTextures.add(tex)
       uniforms[id].value = tex
     })
   }
@@ -166,6 +173,8 @@ export class ShaderPlayer {
   destroy(): void {
     if (this.rafId !== null) cancelAnimationFrame(this.rafId)
     this.resizeObserver?.disconnect()
+    this.managedTextures.forEach((t) => t.dispose())
+    this.managedTextures.clear()
     this.geometry?.dispose()
     this.material?.dispose()
     this.renderer?.dispose()

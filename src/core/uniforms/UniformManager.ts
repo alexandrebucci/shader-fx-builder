@@ -22,6 +22,8 @@ export class UniformManager {
   }
 
   setUniform(id: string, value: UniformValue): void {
+    // Texture values (string URL or null) are managed exclusively by ShaderPlayer.setTextureUniform
+    if (value === null) return
     if (typeof value === 'boolean') {
       if (!(id in this.uniforms)) this.uniforms[id] = { value: value ? 1.0 : 0.0 }
       else this.uniforms[id].value = value ? 1.0 : 0.0

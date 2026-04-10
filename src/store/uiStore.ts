@@ -34,7 +34,7 @@ export const useUIStore = create<UIStore>((set, get) => ({
   setActiveTab: (tab) => set({ activeTab: tab }),
   setFps: (fps) => set({ fps }),
   addUploadedTexture: (label, objectUrl) => {
-    const id = `upload-${Date.now()}`
+    const id = crypto.randomUUID()
     set((state) => ({
       uploadedTextures: [...state.uploadedTextures, { id, label, url: objectUrl }],
     }))

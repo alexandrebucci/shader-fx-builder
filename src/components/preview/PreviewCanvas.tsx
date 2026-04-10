@@ -48,7 +48,10 @@ export function PreviewCanvas() {
     playerRef.current.initUniforms(activeShader.params, activeShader.fragment)
   }, [activeShader])
 
-  // Sync uniform values — route texture params to setTextureUniform
+  // Sync uniform values — route texture params to setTextureUniform.
+  // This effect must be declared AFTER the activeShader effect above — React fires effects
+  // in declaration order, so initUniforms always runs before this sync, ensuring texture
+  // uniforms exist in the map before setTextureUniform is called.
   useEffect(() => {
     if (!playerRef.current) return
     const params = activeShader?.params ?? []
