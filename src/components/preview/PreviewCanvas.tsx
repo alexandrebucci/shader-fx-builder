@@ -9,7 +9,7 @@ export function PreviewCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const playerRef = useRef<ShaderPlayer | null>(null)
-  const initialized = useRef(false)  // StrictMode guard
+  const initialized = useRef(false)
 
   const activeShader = useShaderStore((s) => s.activeShader)
   const uniformValues = useShaderStore((s) => s.uniformValues)
@@ -48,13 +48,19 @@ export function PreviewCanvas() {
     playerRef.current.initUniforms(activeShader.params, activeShader.fragment)
   }, [activeShader])
 
-  // Sync uniform values
+  // Sync uniform values — route texture params to setTextureUniform
   useEffect(() => {
     if (!playerRef.current) return
+    const params = activeShader?.params ?? []
     Object.entries(uniformValues).forEach(([id, value]) => {
-      playerRef.current!.setUniform(id, value)
+      const param = params.find((p) => p.id === id)
+      if (param?.type === 'texture') {
+        playerRef.current!.setTextureUniform(id, value as string | null)
+      } else {
+        playerRef.current!.setUniform(id, value)
+      }
     })
-  }, [uniformValues])
+  }, [uniformValues, activeShader])
 
   return (
     <div ref={containerRef} className="relative w-full h-full">
