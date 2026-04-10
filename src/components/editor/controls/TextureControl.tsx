@@ -13,6 +13,8 @@ export function TextureControl({ param, value, onChange }: Props) {
   const { uploadedTextures, addUploadedTexture, removeUploadedTexture } = useUIStore()
 
   const bundled = param.assets ?? []
+  // `uploaded: true as const` discriminant distinguishes user-uploaded entries from bundled
+  // assets so the ✕ remove badge only appears on uploads (checked via `'uploaded' in asset`)
   const allAssets = [
     ...bundled,
     ...uploadedTextures.map((t) => ({ ...t, uploaded: true as const })),
