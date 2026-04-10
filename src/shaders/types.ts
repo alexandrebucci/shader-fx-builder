@@ -36,7 +36,7 @@ export interface ShaderDef {
   name: string
   category: 'background' | 'image-fx'
   tags: string[]
-  thumbnail: string
+  thumbnail: string  // empty string for MVP — thumbnail generation is Phase 6
   description: string
   vertex: string
   fragment: string
