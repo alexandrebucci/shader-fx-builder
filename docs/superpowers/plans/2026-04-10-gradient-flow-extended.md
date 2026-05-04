@@ -1,6 +1,6 @@
 # Gradient Flow Extended — Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Add 9 new params to `gradient-flow` (scale, frequency, offset, grain, vignette, displacement texture + 3 displacement controls) plus a full texture system (TextureControl UI, file upload, bundled assets, ShaderPlayer.setTextureUniform).
 
@@ -42,7 +42,7 @@
 
 No unit tests — TypeScript catches type errors at compile time.
 
-- [ ] **Step 1: Update `UniformValue` to include `null`**
+- [x] **Step 1: Update `UniformValue` to include `null`**
 
 In `src/core/uniforms/types.ts`, replace the file content:
 
@@ -57,7 +57,7 @@ export interface UniformDef {
 }
 ```
 
-- [ ] **Step 2: Update `src/shaders/types.ts`**
+- [x] **Step 2: Update `src/shaders/types.ts`**
 
 Replace the file content:
 
@@ -109,7 +109,7 @@ export interface ShaderDef {
 }
 ```
 
-- [ ] **Step 3: Verify TypeScript compiles**
+- [x] **Step 3: Verify TypeScript compiles**
 
 ```bash
 npx tsc --noEmit
@@ -117,7 +117,7 @@ npx tsc --noEmit
 
 Expected: no errors (existing code uses `number | string | boolean | [number, number]` which is still valid within the wider union).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/core/uniforms/types.ts src/shaders/types.ts
@@ -132,7 +132,7 @@ git commit -m "feat: add texture ParamType, TextureAsset, notNull visibleIf, nul
 - Modify: `src/core/uniforms/__tests__/UniformManager.test.ts`
 - Modify: `src/core/uniforms/UniformManager.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 In `src/core/uniforms/__tests__/UniformManager.test.ts`, add after the last `it()` block (before the closing `}`):
 
@@ -146,7 +146,7 @@ In `src/core/uniforms/__tests__/UniformManager.test.ts`, add after the last `it(
   })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 ```bash
 npx vitest run src/core/uniforms/__tests__/UniformManager.test.ts
@@ -158,7 +158,7 @@ If it PASSES: the implementation is already correct — the default `return para
 
 If it FAILS: proceed to Step 3.
 
-- [ ] **Step 3: Implement (only if Step 2 failed)**
+- [x] **Step 3: Implement (only if Step 2 failed)**
 
 In `src/core/uniforms/UniformManager.ts`, in `toThreeValue`, add a case before the final `return param.default`:
 
@@ -176,7 +176,7 @@ In `src/core/uniforms/UniformManager.ts`, in `toThreeValue`, add a case before t
   }
 ```
 
-- [ ] **Step 4: Run tests to verify all pass**
+- [x] **Step 4: Run tests to verify all pass**
 
 ```bash
 npx vitest run src/core/uniforms/__tests__/UniformManager.test.ts
@@ -184,7 +184,7 @@ npx vitest run src/core/uniforms/__tests__/UniformManager.test.ts
 
 Expected: all 7 tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/core/uniforms/UniformManager.ts src/core/uniforms/__tests__/UniformManager.test.ts
@@ -198,7 +198,7 @@ git commit -m "feat: UniformManager handles texture param type (initializes to n
 **Files:**
 - Modify: `src/store/uiStore.ts`
 
-- [ ] **Step 1: Add uploadedTextures state and actions**
+- [x] **Step 1: Add uploadedTextures state and actions**
 
 Replace `src/store/uiStore.ts` with:
 
@@ -253,7 +253,7 @@ export const useUIStore = create<UIStore>((set, get) => ({
 }))
 ```
 
-- [ ] **Step 2: Verify TypeScript compiles**
+- [x] **Step 2: Verify TypeScript compiles**
 
 ```bash
 npx tsc --noEmit
@@ -261,7 +261,7 @@ npx tsc --noEmit
 
 Expected: no errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/store/uiStore.ts
@@ -277,7 +277,7 @@ git commit -m "feat: add uploadedTextures slice to uiStore"
 
 No unit test — `ShaderPlayer` requires a real `HTMLCanvasElement` and `WebGLRenderer`.
 
-- [ ] **Step 1: Add `setTextureUniform` method and update `initUniforms`**
+- [x] **Step 1: Add `setTextureUniform` method and update `initUniforms`**
 
 Replace `src/core/player/ShaderPlayer.ts` with:
 
@@ -461,7 +461,7 @@ export class ShaderPlayer {
 }
 ```
 
-- [ ] **Step 2: Verify TypeScript compiles**
+- [x] **Step 2: Verify TypeScript compiles**
 
 ```bash
 npx tsc --noEmit
@@ -469,7 +469,7 @@ npx tsc --noEmit
 
 Expected: no errors.
 
-- [ ] **Step 3: Run existing tests**
+- [x] **Step 3: Run existing tests**
 
 ```bash
 npx vitest run
@@ -477,7 +477,7 @@ npx vitest run
 
 Expected: all tests PASS (ShaderPlayer is not covered by unit tests).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/core/player/ShaderPlayer.ts
@@ -494,7 +494,7 @@ git commit -m "feat: add ShaderPlayer.setTextureUniform and init texture params 
 - Create: `src/assets/displacement/marble.png`
 - Create: `src/assets/displacement/voronoi.png`
 
-- [ ] **Step 1: Create the generation script**
+- [x] **Step 1: Create the generation script**
 
 Create `scripts/generate-displacement-textures.mjs`:
 
@@ -619,7 +619,7 @@ writeFileSync('src/assets/displacement/voronoi.png', buildPNG(voronoiPx))
 console.log('Generated: cloud.png, marble.png, voronoi.png → src/assets/displacement/')
 ```
 
-- [ ] **Step 2: Run the script**
+- [x] **Step 2: Run the script**
 
 ```bash
 node scripts/generate-displacement-textures.mjs
@@ -630,7 +630,7 @@ Expected output:
 Generated: cloud.png, marble.png, voronoi.png → src/assets/displacement/
 ```
 
-- [ ] **Step 3: Verify the files exist**
+- [x] **Step 3: Verify the files exist**
 
 ```bash
 ls -lh src/assets/displacement/
@@ -638,7 +638,7 @@ ls -lh src/assets/displacement/
 
 Expected: three `.png` files, each ~8–20 KB.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add scripts/generate-displacement-textures.mjs src/assets/displacement/
@@ -652,7 +652,7 @@ git commit -m "feat: add displacement texture generation script and PNG assets"
 **Files:**
 - Modify: `src/shaders/library/backgrounds/gradient-flow.ts`
 
-- [ ] **Step 1: Replace the file**
+- [x] **Step 1: Replace the file**
 
 Replace `src/shaders/library/backgrounds/gradient-flow.ts` with:
 
@@ -826,7 +826,7 @@ export const gradientFlow: ShaderDef = {
 }
 ```
 
-- [ ] **Step 2: Verify TypeScript compiles**
+- [x] **Step 2: Verify TypeScript compiles**
 
 ```bash
 npx tsc --noEmit
@@ -834,7 +834,7 @@ npx tsc --noEmit
 
 Expected: no errors. Vite will resolve the PNG imports to static asset URLs at build/dev time.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/shaders/library/backgrounds/gradient-flow.ts
@@ -849,7 +849,7 @@ git commit -m "feat: gradient-flow extended — 9 new params, displacement map, 
 - Create: `src/components/editor/controls/TextureControl.tsx`
 - Modify: `src/components/editor/controls/index.ts`
 
-- [ ] **Step 1: Create `TextureControl.tsx`**
+- [x] **Step 1: Create `TextureControl.tsx`**
 
 Create `src/components/editor/controls/TextureControl.tsx`:
 
@@ -941,7 +941,7 @@ export function TextureControl({ param, value, onChange }: Props) {
 }
 ```
 
-- [ ] **Step 2: Export from `controls/index.ts`**
+- [x] **Step 2: Export from `controls/index.ts`**
 
 In `src/components/editor/controls/index.ts`, add the export:
 
@@ -954,7 +954,7 @@ export { Vec2Control } from './Vec2Control'
 export { TextureControl } from './TextureControl'
 ```
 
-- [ ] **Step 3: Verify TypeScript compiles**
+- [x] **Step 3: Verify TypeScript compiles**
 
 ```bash
 npx tsc --noEmit
@@ -962,7 +962,7 @@ npx tsc --noEmit
 
 Expected: no errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/components/editor/controls/TextureControl.tsx src/components/editor/controls/index.ts
@@ -976,7 +976,7 @@ git commit -m "feat: add TextureControl component (thumbnail grid + upload + non
 **Files:**
 - Modify: `src/components/editor/ParamsPanel.tsx`
 
-- [ ] **Step 1: Update `isVisible` to handle `notNull` variant**
+- [x] **Step 1: Update `isVisible` to handle `notNull` variant**
 
 In `src/components/editor/ParamsPanel.tsx`, replace the `isVisible` function:
 
@@ -1001,7 +1001,7 @@ function isVisible(
 }
 ```
 
-- [ ] **Step 2: Add texture case to `ParamRow` and update imports**
+- [x] **Step 2: Add texture case to `ParamRow` and update imports**
 
 Replace `src/components/editor/ParamsPanel.tsx` with:
 
@@ -1186,7 +1186,7 @@ export function ParamsPanel() {
 }
 ```
 
-- [ ] **Step 3: Verify TypeScript compiles**
+- [x] **Step 3: Verify TypeScript compiles**
 
 ```bash
 npx tsc --noEmit
@@ -1194,7 +1194,7 @@ npx tsc --noEmit
 
 Expected: no errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/components/editor/ParamsPanel.tsx
@@ -1208,7 +1208,7 @@ git commit -m "feat: ParamsPanel — texture case in ParamRow, notNull visibleIf
 **Files:**
 - Modify: `src/components/preview/PreviewCanvas.tsx`
 
-- [ ] **Step 1: Update the uniform sync effect**
+- [x] **Step 1: Update the uniform sync effect**
 
 Replace `src/components/preview/PreviewCanvas.tsx` with:
 
@@ -1287,7 +1287,7 @@ export function PreviewCanvas() {
 }
 ```
 
-- [ ] **Step 2: Verify TypeScript compiles**
+- [x] **Step 2: Verify TypeScript compiles**
 
 ```bash
 npx tsc --noEmit
@@ -1295,7 +1295,7 @@ npx tsc --noEmit
 
 Expected: no errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/components/preview/PreviewCanvas.tsx
@@ -1309,7 +1309,7 @@ git commit -m "feat: PreviewCanvas routes texture params to setTextureUniform"
 **Files:**
 - Modify: `checklist.md`
 
-- [ ] **Step 1: Run all unit tests**
+- [x] **Step 1: Run all unit tests**
 
 ```bash
 npx vitest run
@@ -1317,7 +1317,7 @@ npx vitest run
 
 Expected: all tests PASS (7 UniformManager tests).
 
-- [ ] **Step 2: Start dev server and manually verify**
+- [x] **Step 2: Start dev server and manually verify**
 
 ```bash
 npm run dev
@@ -1334,7 +1334,7 @@ Open `http://localhost:5173`. Verify:
 8. Loading the **Smoky** preset selects the Cloud texture and sets Strength=0.6
 9. Loading the **Psychedelic** preset shows no displacement (high frequency, multicolor)
 
-- [ ] **Step 3: Update checklist.md**
+- [x] **Step 3: Update checklist.md**
 
 In `checklist.md`, add above `## Slice 1`:
 
@@ -1356,9 +1356,21 @@ In `checklist.md`, add above `## Slice 1`:
 ---
 ```
 
-- [ ] **Step 4: Final commit**
+- [x] **Step 4: Final commit**
 
 ```bash
 git add checklist.md
 git commit -m "chore: mark slice 6 as complete in checklist"
 ```
+
+---
+
+## Refinements post-implémentation
+
+Changements effectués après la complétion initiale des 9 tâches :
+
+- **Déplacement statique** : `uDisplacementSpeed` supprimé entièrement du GLSL, params et presets. `dispUv = uv0 * uDisplacementScale` (pas d'animation de la texture).
+- **`uDisplacementScale` max** : 5 → 1 (limité pour éviter les artefacts de répétition sur gradient).
+- **`uPixelation`** : ajouté au groupe Style de gradient-flow (range 1–128, step 1, même logique que liquid-noise — quantise `uv0` avant displacement et gradient UV).
+- **`uDisplacementStrength` default** : 0 → 0.5.
+- **`ColorControl` portal** : le picker `HexColorPicker` est désormais rendu via `createPortal(…, document.body)` avec `position: fixed` pour échapper à l'`overflow: hidden` des accordéons shadcn.

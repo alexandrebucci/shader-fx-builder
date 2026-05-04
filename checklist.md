@@ -31,6 +31,13 @@
 - [x] **Task 8** — ParamsPanel: texture case + notNull isVisible
 - [x] **Task 9** — PreviewCanvas: texture routing in uniform sync
 
+**Refinements post-implémentation :**
+- [x] Déplacement statique : suppression de `uDisplacementSpeed` (dispUv = `vUv * uDisplacementScale`, pas d'animation)
+- [x] `uDisplacementScale` max réduit de 5 → 1 (évite les artefacts de répétition)
+- [x] `uPixelation` ajouté au groupe Style (range 1–128, même logique que liquid-noise)
+- [x] `uDisplacementStrength` default 0 → 0.5
+- [x] `ColorControl` : picker rendu via `createPortal` sur `document.body` (fix clipping `overflow:hidden` des accordéons)
+
 ---
 
 ## Slice 1 — liquid-noise end-to-end ✅
@@ -90,6 +97,39 @@
 - [x] Connecter galerie → `shaderStore.setShader`
 - [x] `BuilderPage` final : galerie + canvas + params en 3 colonnes
 - [x] ✅ Milestone : builder complet avec galerie fonctionnelle
+
+---
+
+## Backlog — Nouveaux effets à intégrer
+> **Spec docs :** `docs/new-effects/`
+
+### Slit-scan (fond image en bandes verticales déphasées)
+> **Doc :** `docs/new-effects/effect-slit-scan.md`
+> **Complexité :** faible — single-pass fragment shader, compatible avec `ShaderPlayer` actuel.
+> **Pré-requis :** ✅ système texture (Slice 6) — réutilise `TextureControl` + `setTextureUniform`.
+> **Catégorie :** `backgrounds`.
+
+- [ ] GLSL `slit-scan.frag` adapté à `ShaderDef` (uniforms : `uTex`, `uTexResolution`, `uBands`, `uAmplitude`, `uSpeed`, `uPhaseSpread`, `uSoftness`, `uMotionBlur`)
+- [ ] Helper `coverUv` (déjà similaire à wave-distort) — éventuellement extraire en snippet `cover-uv.glsl`
+- [ ] Param `uTex` type `texture` + assets photo placeholders (générer ou réutiliser)
+- [ ] Params groupés (Bands / Motion / Style) selon convention Slice 5
+- [ ] 2–3 presets (calme, ondulant, fragmenté)
+- [ ] Enregistrement dans `SHADER_LIBRARY`
+
+### Glassmorphism (carte verre dépoli)
+> **Doc :** `docs/new-effects/effect-glassmorphism.md`
+> **Complexité :** élevée — pipeline 6 passes avec FBO pyramide blur, refraction SDF, rim light.
+> **Blocage architecture :** `ShaderPlayer` actuel = single-pass. Refactor requis pour pipeline multi-pass + FBOs.
+> **Catégorie :** `image-fx` (overlay sur backdrop).
+
+- [ ] Spike : prototyper le pipeline multi-pass dans une branche séparée pour valider
+- [ ] Décision architecture : étendre `ShaderPlayer` (passes déclaratives dans `ShaderDef`) vs. composant dédié
+- [ ] Si refactor `ShaderPlayer` : `passes: PassDef[]` + gestion FBOs (alloc, resize, ping-pong)
+- [ ] GLSL `downsample.frag` + `blur.frag` (gaussien séparable H/V) + `glass-card.frag` (SDF + refraction + rim + chroma ab)
+- [ ] Vertex shader spécifique `glass-card.vert` (quad UI positionné en pixels, pas plein écran)
+- [ ] Uniforms carte : `uCardCenter`, `uCardHalfSize`, `uRadius`, `uBorder`, `uTint`, `uTintAlpha`, `uRefraction`, `uChromaAb`
+- [ ] Composer avec slit-scan en backdrop (cas démo de la doc)
+- [ ] Overlay HTML sur le canvas (texte net) — pattern à documenter pour les exports futurs
 
 ---
 

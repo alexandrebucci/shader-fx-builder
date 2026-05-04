@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { HexColorPicker } from 'react-colorful'
 import type { ParamDef } from '@/shaders/types'
 
@@ -12,19 +13,33 @@ export function ColorControl({ param, value, onChange }: Props) {
   const isModified = value !== param.default
   const [open, setOpen] = useState(false)
   const [hexInput, setHexInput] = useState(value)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [pickerPos, setPickerPos] = useState({ top: 0, left: 0 })
+  const swatchRef = useRef<HTMLButtonElement>(null)
+  const pickerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => { setHexInput(value) }, [value])
 
+  // Close picker on outside click
   useEffect(() => {
+    if (!open) return
     const handler = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
+      if (
+        swatchRef.current?.contains(e.target as Node) ||
+        pickerRef.current?.contains(e.target as Node)
+      ) return
+      setOpen(false)
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
-  }, [])
+  }, [open])
+
+  const handleOpen = () => {
+    if (!open && swatchRef.current) {
+      const rect = swatchRef.current.getBoundingClientRect()
+      setPickerPos({ top: rect.bottom + 4, left: rect.left })
+    }
+    setOpen((o) => !o)
+  }
 
   const handleHexInput = (raw: string) => {
     setHexInput(raw)
@@ -32,13 +47,14 @@ export function ColorControl({ param, value, onChange }: Props) {
   }
 
   return (
-    <div ref={containerRef} className="flex flex-col gap-1.5 relative">
+    <div className="flex flex-col gap-1.5">
       <span className={`text-xs ${isModified ? 'text-foreground' : 'text-muted-foreground'}`}>{param.label}</span>
       <div className="flex items-center gap-2">
         <button
+          ref={swatchRef}
           className="w-8 h-6 rounded border border-border flex-shrink-0"
           style={{ background: value }}
-          onClick={() => setOpen((o) => !o)}
+          onClick={handleOpen}
           aria-label={`Pick color for ${param.label}`}
         />
         <input
@@ -48,10 +64,15 @@ export function ColorControl({ param, value, onChange }: Props) {
           maxLength={7}
         />
       </div>
-      {open && (
-        <div className="absolute top-full left-0 z-50 mt-1 p-2 bg-popover border border-border rounded shadow-lg">
+      {open && createPortal(
+        <div
+          ref={pickerRef}
+          className="fixed z-[9999] p-2 bg-popover border border-border rounded shadow-lg"
+          style={{ top: pickerPos.top, left: pickerPos.left }}
+        >
           <HexColorPicker color={value} onChange={onChange} />
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   )

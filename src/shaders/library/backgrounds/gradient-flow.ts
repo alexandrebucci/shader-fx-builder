@@ -27,18 +27,26 @@ uniform float uFrequency;
 uniform vec2  uOffset;
 uniform float uGrain;
 uniform float uVignette;
+uniform float uPixelation;
 
 varying vec2 vUv;
 
 // #include <color>
 
 void main() {
+  // Pixelation: quantize UV grid before all sampling
+  vec2 uv0 = vUv;
+  if (uPixelation > 1.5) {
+    vec2 pixelCount = vec2(uPixelation * uAspect, uPixelation);
+    uv0 = floor(uv0 * pixelCount) / pixelCount;
+  }
+
   // Sample displacement map (black DataTexture when none selected → disp = 0)
-  vec2 dispUv = vUv * uDisplacementScale;
+  vec2 dispUv = uv0 * uDisplacementScale;
   float disp = texture2D(uDisplacementMap, dispUv).r;
 
   // Build UV with scale, aspect correction, offset, displacement
-  vec2 uv = vUv - 0.5;
+  vec2 uv = uv0 - 0.5;
   uv.x *= uAspect;
   uv += uOffset;
   uv *= uScale;
@@ -90,8 +98,9 @@ export const gradientFlow: ShaderDef = {
     { id: 'uColorC',   label: 'Color C',  type: 'color', group: 'Colors', default: '#45b7d1' },
     { id: 'uContrast', label: 'Contrast', type: 'range', group: 'Colors', default: 1.0, min: 0.5, max: 2, step: 0.05 },
     // Style
-    { id: 'uGrain',    label: 'Grain',    type: 'range', group: 'Style', default: 0, min: 0, max: 0.3,  step: 0.005 },
-    { id: 'uVignette', label: 'Vignette', type: 'range', group: 'Style', default: 0, min: 0, max: 1,    step: 0.01  },
+    { id: 'uGrain',      label: 'Grain',      type: 'range', group: 'Style', default: 0, min: 0, max: 0.3,  step: 0.005 },
+    { id: 'uVignette',   label: 'Vignette',   type: 'range', group: 'Style', default: 0, min: 0, max: 1,    step: 0.01  },
+    { id: 'uPixelation', label: 'Pixelation', type: 'range', group: 'Style', default: 1, min: 1, max: 128,  step: 1     },
     // Displacement
     {
       id: 'uDisplacementMap', label: 'Map', type: 'texture', group: 'Displacement', default: null,
@@ -103,12 +112,12 @@ export const gradientFlow: ShaderDef = {
     },
     {
       id: 'uDisplacementStrength', label: 'Strength', type: 'range', group: 'Displacement',
-      default: 0, min: 0, max: 1, step: 0.01,
+      default: 0.5, min: 0, max: 1, step: 0.01,
       visibleIf: { param: 'uDisplacementMap', notNull: true },
     },
     {
       id: 'uDisplacementScale', label: 'Scale', type: 'range', group: 'Displacement',
-      default: 1.0, min: 0.1, max: 5, step: 0.05,
+      default: 1.0, min: 0.1, max: 1, step: 0.05,
       visibleIf: { param: 'uDisplacementMap', notNull: true },
     },
   ],
@@ -120,7 +129,7 @@ export const gradientFlow: ShaderDef = {
         uSpeed: 0.3, uAngle: 0.78,
         uColorA: '#ff6b6b', uColorB: '#feca57', uColorC: '#ff9ff3',
         uContrast: 1.2, uScale: 1.0, uFrequency: 1.0, uOffset: [0, 0],
-        uGrain: 0, uVignette: 0,
+        uGrain: 0, uVignette: 0, uPixelation: 1,
         uDisplacementMap: null, uDisplacementStrength: 0, uDisplacementScale: 1.0,
       },
     },
@@ -131,7 +140,7 @@ export const gradientFlow: ShaderDef = {
         uSpeed: 0.2, uAngle: 1.57,
         uColorA: '#0a3d62', uColorB: '#38ada9', uColorC: '#60a3bc',
         uContrast: 1.0, uScale: 1.0, uFrequency: 1.0, uOffset: [0, 0],
-        uGrain: 0, uVignette: 0,
+        uGrain: 0, uVignette: 0, uPixelation: 1,
         uDisplacementMap: null, uDisplacementStrength: 0, uDisplacementScale: 1.0,
       },
     },
@@ -145,8 +154,8 @@ export const gradientFlow: ShaderDef = {
         uSpeed: 0.15, uAngle: 0.5,
         uColorA: '#2c2c54', uColorB: '#706fd3', uColorC: '#aaa6d0',
         uContrast: 1.1, uScale: 1.2, uFrequency: 1.0, uOffset: [0, 0],
-        uGrain: 0.05, uVignette: 0.4,
-        uDisplacementMap: cloudUrl, uDisplacementStrength: 0.6, uDisplacementScale: 1.5,
+        uGrain: 0.05, uVignette: 0.4, uPixelation: 1,
+        uDisplacementMap: cloudUrl, uDisplacementStrength: 0.6, uDisplacementScale: 1.0,
       },
     },
     {
@@ -156,7 +165,7 @@ export const gradientFlow: ShaderDef = {
         uSpeed: 0.8, uAngle: 1.0,
         uColorA: '#ff006e', uColorB: '#8338ec', uColorC: '#06d6a0',
         uContrast: 1.8, uScale: 0.8, uFrequency: 3.0, uOffset: [0, 0],
-        uGrain: 0.15, uVignette: 0.2,
+        uGrain: 0.15, uVignette: 0.2, uPixelation: 1,
         uDisplacementMap: null, uDisplacementStrength: 0, uDisplacementScale: 1.0,
       },
     },
